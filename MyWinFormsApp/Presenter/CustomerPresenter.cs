@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyWinFormsApp.Presenter
 {
-    public class CustomerPresenter
+    public class CustomerPresenter:ICustomerPresenter
     {
         private readonly ICustomerView _view;
         private readonly CustomerModel _model;
