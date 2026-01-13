@@ -23,10 +23,10 @@ namespace MyWinFormsApp
             var serviceProvider = services.BuildServiceProvider();
             
             // Get the CustomerForm (which implements ICustomerView)
-            var customerForm = serviceProvider.GetRequiredService<CustomerForm>();
+            CustomerForm customerForm = (CustomerForm)serviceProvider.GetRequiredService<ICustomerView>();
             
             // IMPORTANT: Create the presenter to wire up the MVP pattern
-            var presenter = serviceProvider.GetRequiredService<CustomerPresenter>();
+            var presenter = serviceProvider.GetRequiredService<ICustomerPresenter>();
             
             Application.Run(customerForm);
         }
@@ -34,14 +34,14 @@ namespace MyWinFormsApp
         private static void ConfigureServices(IServiceCollection services)
         {
             // Register the concrete form
-            services.AddSingleton<CustomerForm>();
+            services.AddScoped<CustomerForm>();
             
             // Register ICustomerView to resolve to CustomerForm
-            services.AddSingleton<ICustomerView>(provider => provider.GetRequiredService<CustomerForm>());
+            services.AddScoped<ICustomerView,CustomerForm>();
             
             // Register model and presenter
             services.AddTransient<CustomerModel>();
-            services.AddTransient<CustomerPresenter>();
+            services.AddTransient<ICustomerPresenter,CustomerPresenter>();
         }
     }
 }
