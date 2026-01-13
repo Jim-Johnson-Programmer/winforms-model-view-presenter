@@ -31,7 +31,7 @@ namespace MyWinFormsApp
             Application.Run(customerForm);
         }
 
-        private static void ConfigureServices(ServiceCollection services)
+        private static void ConfigureServices(IServiceCollection services)
         {
             // Register the concrete form
             services.AddSingleton<CustomerForm>();
