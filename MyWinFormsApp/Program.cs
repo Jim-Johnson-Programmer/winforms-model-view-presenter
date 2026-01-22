@@ -1,47 +1,49 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MyWinFormsApp.Factory;
 using MyWinFormsApp.Model;
-using MyWinFormsApp.Presenter;
 using MyWinFormsApp.View;
+using System.Security.Policy;
 
 namespace MyWinFormsApp
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            var services = new ServiceCollection();
-            ConfigureServices(services);
+            // ConfigureServices() must be called before building the host
+            var host = CreateHostBuilder().UseDiBootStrapper().Build();
 
-            var serviceProvider = services.BuildServiceProvider();
-            
-            // Get the CustomerForm (which implements ICustomerView)
-            CustomerForm customerForm = (CustomerForm)serviceProvider.GetRequiredService<ICustomerView>();
-            
-            // IMPORTANT: Create the presenter to wire up the MVP pattern
-            var presenter = serviceProvider.GetRequiredService<ICustomerPresenter>();
-            
-            Application.Run(customerForm);
+            var services = host.Services;
+
+            // Get the form factory and create the main form
+            var formFactory = services.GetRequiredService<IFormFactory>();
+            var mainForm = services.GetRequiredService<MainForm>();
+
+            // Alternative ways to start your application:
+
+            // Option 1: Start with MainForm (recommended for multi-form apps)
+            Application.Run(mainForm);
+
+            // Option 2: Start with CustomerForm directly using factory
+            // var customerForm = formFactory.CreateCustomerForm();
+            // Application.Run(customerForm);
+
+            // Option 3: Start with any form using generic factory method
+            // var customerForm = formFactory.CreateForm<CustomerForm>();
+            // Application.Run(customerForm);
         }
 
-        private static void ConfigureServices(IServiceCollection services)
-        {
-            // Register the concrete form
-            services.AddScoped<CustomerForm>();
-            
-            // Register ICustomerView to resolve to CustomerForm
-            services.AddScoped<ICustomerView,CustomerForm>();
-            
-            // Register model and presenter
-            services.AddTransient<CustomerModel>();
-            services.AddTransient<ICustomerPresenter,CustomerPresenter>();
-        }
+
+
+        static IHostBuilder CreateHostBuilder() =>
+            Host.CreateDefaultBuilder();
+        //.ConfigureServices((context, services) =>
+        //{
+        //    ConfigureServices(services);
+        //});
     }
 }

@@ -8,8 +8,8 @@ namespace MyWinFormsApp.Model
 {
     public class CustomerModel
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
+        public string Name { get; set; } = "Jim";
+        public string Email { get; set; } = "abc@abc.com";
 
         public bool IsValidEmail()
         {
